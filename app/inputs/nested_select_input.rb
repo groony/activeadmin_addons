@@ -129,7 +129,7 @@ class NestedSelectInput < Formtastic::Inputs::StringInput
   end
 
   def translated_attribute(attribute)
-    @object.class.human_attribute_name(attribute)
+    @object.class.human_attribute_name(attribute) if @object.class.respond_to? :human_attribute_name
   end
 
   def build_url(attribute)
