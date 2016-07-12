@@ -63,7 +63,7 @@ class NestedSelectInput < Formtastic::Inputs::StringInput
 
   def select_html_options(level)
     attribute = level[:attribute]
-    instance = instance_from_attribute_name(attribute)
+    instance = instance_from_attribute_name(attribute, level[:attribute_prefix])
 
     opts = {}
     opts["class"] = select_classes(level)
@@ -109,17 +109,17 @@ class NestedSelectInput < Formtastic::Inputs::StringInput
     parent_attribute = level_data[:parent_attribute]
     return unless parent_attribute
     add_virtual_accessor(parent_attribute)
-    instance = instance_from_attribute_name(level_data[:attribute])
+    instance = instance_from_attribute_name(level_data[:attribute], level_data[:attribute_prefix])
     if instance && instance.respond_to?(parent_attribute)
       @object.send("#{parent_attribute}=", instance.send(parent_attribute))
     end
   end
 
-  def instance_from_attribute_name(attribute)
+  def instance_from_attribute_name(attribute, attribute_prefix)
     return unless attribute
     attribute_value = @object.send(attribute)
     return unless attribute_value
-    klass = attribute.to_s.chomp("_id").camelize.constantize
+    klass = attribute.to_s.gsub(attribute_prefix.to_s, '').split("_id")[0].camelize.constantize
     klass.find_by_id(attribute_value)
   end
 
